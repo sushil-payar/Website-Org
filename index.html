@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hawaiian Legacy Reforestation Initiative</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --forest-dark: #1a2e1a;
+      --forest-mid: #2d5016;
+      --forest-light: #4a7c2f;
+      --gold-primary: #c8872a;
+      --gold-light: #e8a84c;
+      --cream: #f5f0e8;
+      --text-dark: #1c1c1c;
+      --text-muted: #5a6b4f;
+      --white: #ffffff;
+      --nav-green: #3a6b1a;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--forest-dark);
+      color: var(--cream);
+      line-height: 1.6;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    .cursor-dot, .cursor-ring {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 1200;
+      transform: translate(-50%, -50%);
+      mix-blend-mode: screen;
+    }
+    .cursor-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold-primary); }
+    .cursor-ring { width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(200,135,42,.6); }
+
+    .container { width: min(1200px, 92%); margin: 0 auto; }
+    .label {
+      display: inline-flex;
+      align-items: center;
+      gap: .8rem;
+      font-size: .68rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--gold-primary);
+      margin-bottom: 1.5rem;
+      font-weight: 300;
+    }
+    .label::before { content: ""; width: 38px; height: 1px; background: var(--gold-primary); }
+    h1, h2, h3, h4, blockquote { font-family: 'Cormorant Garamond', serif; font-weight: 300; line-height: 1; }
+
+    .btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      text-decoration: none;
+      font-weight: 400;
+      padding: .9rem 1.5rem;
+      transition: .35s var(--ease);
+      overflow: hidden;
+    }
+    .btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 20%, rgba(255,255,255,.4), transparent 80%);
+      transform: translateX(-120%);
+      transition: .6s var(--ease);
+    }
+    .btn:hover::after { transform: translateX(120%); }
+    .btn-gold { background: var(--gold-primary); color: var(--text-dark); }
+    .btn-gold:hover { background: var(--gold-light); }
+    .btn-ghost {
+      color: var(--cream);
+      border-bottom: 1px solid rgba(245,240,232,.8);
+      padding-inline: .2rem;
+    }
+    .btn-ghost:hover { color: var(--gold-light); border-color: var(--gold-light); }
+
+    .site-nav {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 1000;
+      transition: .35s var(--ease);
+      padding: 1.1rem 0;
+    }
+    .site-nav.scrolled {
+      background: rgba(26,46,26,.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(200,135,42,.2);
+    }
+    .nav-wrap { display: flex; align-items: center; justify-content: space-between; gap: 1.2rem; }
+    .logo {
+      color: var(--white);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.3rem, 2vw, 1.7rem);
+      letter-spacing: .04em;
+      text-decoration: none;
+    }
+    .nav-links { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; justify-content: flex-end; }
+    .nav-links a { color: var(--nav-green); text-decoration: none; font-size: .82rem; }
+    .nav-links a:hover { color: var(--gold-light); }
+
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      align-items: end;
+      background:
+        linear-gradient(to bottom, rgba(26,46,26,.4) 0%, rgba(26,46,26,.2) 40%, rgba(26,46,26,.85) 85%, #1a2e1a 100%),
+        radial-gradient(circle at 20% 20%, rgba(74,124,47,.4), transparent 45%),
+        #1a2e1a;
+      padding: 8rem 0 4rem;
+      position: relative;
+    }
+    .hero .eyebrow { font-size: .65rem; letter-spacing: .3em; text-transform: uppercase; color: var(--gold-primary); margin-bottom: 1.4rem; }
+    .hero h1 { font-size: clamp(2.8rem, 6.5vw, 6rem); max-width: 8ch; margin-bottom: 1.4rem; }
+    .hero h1 em { color: var(--gold-light); font-style: italic; }
+    .hero p { max-width: 62ch; color: rgba(245,240,232,.75); font-weight: 300; margin-bottom: 2rem; }
+    .cta-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .scroll-indicator {
+      position: absolute;
+      right: min(4vw, 48px);
+      bottom: 38px;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .scroll-indicator .line { width: 2px; height: 90px; background: linear-gradient(var(--gold-primary), transparent); }
+    .scroll-indicator span { transform: rotate(90deg); transform-origin: left bottom; color: rgba(245,240,232,.7); font-size: .72rem; letter-spacing: .2em; }
+
+    .impact-bar { background: var(--forest-dark); border-top: 1px solid rgba(200,135,42,.25); border-bottom: 1px solid rgba(200,135,42,.25); }
+    .impact-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+    .impact-item { text-align: center; padding: 2.2rem .8rem; position: relative; }
+    .impact-item + .impact-item { border-left: 1px solid rgba(200,135,42,.2); }
+    .impact-number { font-size: clamp(2rem, 3.5rem, 3.7rem); color: var(--gold-primary); }
+    .impact-label { text-transform: uppercase; font-size: .6rem; letter-spacing: .25em; color: rgba(245,240,232,.75); }
+    .live-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: #69cf55; margin-right: .5rem; box-shadow: 0 0 0 0 rgba(105,207,85,.8); animation: pulse 1.8s infinite; }
+    @keyframes pulse { to { box-shadow: 0 0 0 12px rgba(105,207,85,0);} }
+
+    section { padding: clamp(4rem, 8vw, 7rem) 0; }
+    .mission { background: var(--cream); color: var(--text-dark); }
+    .mission-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 3rem; }
+    .mission h2 { font-size: clamp(2.2rem, 5vw, 4.4rem); }
+    .mission h2 em { color: var(--forest-light); font-style: italic; }
+    .mission p { color: var(--text-muted); font-weight: 300; margin-bottom: 1.2rem; }
+    .inline-stats { margin-top: 1.8rem; border-top: 1px solid rgba(200,135,42,.5); padding-top: 1rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .inline-stats strong { font-family: 'Cormorant Garamond', serif; color: var(--gold-primary); font-size: 2rem; display: block; }
+
+    .pillars { background: var(--forest-dark); position: relative; }
+    .pillars::before, .pillars::after {
+      content: ""; position: absolute; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(200,135,42,.85), transparent);
+    }
+    .pillars::before { top: 0; }
+    .pillars::after { bottom: 0; }
+    .pillar-grid { display: grid; grid-template-columns: repeat(3,1fr); }
+    .pillar-card { padding: 2.2rem 1.6rem; position: relative; transition: .35s var(--ease); border: 1px solid transparent; }
+    .pillar-card + .pillar-card { border-left: 1px solid rgba(200,135,42,.2); }
+    .pillar-card:hover { box-shadow: 0 0 28px rgba(74,124,47,.35); border-color: rgba(200,135,42,.35); }
+    .ghost-no { position: absolute; right: 1rem; top: .5rem; font-size: 5rem; color: rgba(200,135,42,.12); }
+    .icon-box { width: 40px; height: 40px; border: 1px solid rgba(200,135,42,.7); display: grid; place-items: center; margin-bottom: 1rem; }
+    .pillar-card h3 { color: var(--white); font-size: 2rem; margin-bottom: .8rem; }
+    .pillar-card p { color: rgba(184,203,168,.75); font-weight: 300; }
+
+    .quote { background: radial-gradient(circle at center, rgba(74,124,47,.35), transparent 55%), var(--forest-mid); text-align: center; }
+    .quote .line { width: 60px; height: 2px; background: var(--gold-primary); margin: 0 auto 2rem; }
+    .quote blockquote { font-size: clamp(2rem, 4vw, 2.8rem); font-style: italic; color: var(--white); margin-bottom: 1rem; }
+    .quote .attrib { text-transform: uppercase; letter-spacing: .18em; font-size: .65rem; color: rgba(184,203,168,.8); margin-bottom: 1.2rem; }
+    .quote p { max-width: 75ch; margin: 0 auto; color: rgba(184,203,168,.82); font-weight: 300; }
+
+    .plant { padding: 0; }
+    .plant-wrap { display: grid; grid-template-columns: 1fr 1fr; min-height: 540px; }
+    .orbit-side {
+      background: radial-gradient(circle at center, rgba(74,124,47,.35), transparent 50%), var(--forest-mid);
+      display: grid;
+      place-items: center;
+    }
+    .orbiter { position: relative; width: 280px; aspect-ratio: 1; border-radius: 50%; border: 1px solid rgba(200,135,42,.7); animation: orbit 30s linear infinite; }
+    .orbiter::before {
+      content: "Find My Tree · Track My Tree · Own My Tree ·";
+      position: absolute; inset: -16px;
+      border-radius: 50%;
+      color: rgba(245,240,232,.6);
+      font-size: .7rem;
+      letter-spacing: .15em;
+      display: grid; place-items: center;
+    }
+    .leaf { position: absolute; inset: 0; display: grid; place-items: center; font-size: 2.8rem; animation: spin-back 30s linear infinite; }
+    @keyframes orbit { to { transform: rotate(360deg);} }
+    @keyframes spin-back { to { transform: rotate(-360deg);} }
+    .plant-copy { background: var(--forest-dark); display: flex; align-items: center; }
+    .plant-copy .container { width: min(560px, 84%); }
+    .plant-copy h2 { font-size: clamp(2rem, 4vw, 3.6rem); margin-bottom: 1rem; }
+    .plant-copy p { color: rgba(245,240,232,.75); font-weight: 300; margin-bottom: 1.5rem; }
+
+    .partners { background: var(--cream); color: var(--text-dark); }
+    .partners-top { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: end; }
+    .partners h2 { font-size: clamp(2rem, 4.2vw, 3.8rem); }
+    .partners p { color: var(--text-muted); font-weight: 300; }
+    .partner-grid { margin-top: 2.2rem; display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; }
+    .partner-box {
+      border: 1px solid rgba(200,135,42,.7);
+      min-height: 86px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: .9rem;
+      position: relative;
+      transition: .3s var(--ease);
+      overflow: hidden;
+    }
+    .partner-box::before { content: ""; position: absolute; inset: 0; background: rgba(26,46,26,.9); transform: translateY(100%); transition: .3s var(--ease); }
+    .partner-box span { position: relative; z-index: 1; }
+    .partner-box:hover { border-color: var(--gold-primary); color: var(--cream); }
+    .partner-box:hover::before { transform: translateY(0); }
+
+    .collection { background: linear-gradient(135deg, #0a1e0b, #0d2410); }
+    .collection-wrap { display: grid; grid-template-columns: 1.05fr .95fr; gap: 2rem; align-items: center; }
+    .collection h2 { font-size: clamp(2rem, 4.5vw, 4rem); margin-bottom: 1rem; }
+    .collection h2 em { color: var(--gold-light); font-style: italic; }
+    .collection p { color: rgba(245,240,232,.76); font-weight: 300; margin-bottom: 1rem; }
+    .quote-box { border-left: 2px solid var(--gold-primary); padding-left: 1rem; margin: 1.5rem 0; color: rgba(245,240,232,.85); }
+    .decor-frame {
+      aspect-ratio: 3/4;
+      border: 1px solid rgba(200,135,42,.7);
+      background: linear-gradient(170deg, rgba(45,80,22,.8), rgba(10,20,11,.8));
+      padding: 1rem;
+      position: relative;
+    }
+    .decor-frame::before { content: ""; position: absolute; inset: 1rem; border: 1px solid rgba(200,135,42,.4); }
+    .frame-inner { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 2rem; }
+    .frame-inner .feather { font-size: 4.5rem; margin-bottom: .5rem; }
+    .frame-inner em { color: rgba(245,240,232,.76); }
+    .gold-tag { position: absolute; right: .8rem; bottom: .8rem; background: var(--gold-primary); color: var(--text-dark); padding: .35rem .6rem; font-size: .72rem; }
+
+    .offset { background: var(--cream); color: var(--text-dark); border-top: 1px solid rgba(200,135,42,.45); border-bottom: 1px solid rgba(200,135,42,.45); }
+    .offset-wrap { display: grid; grid-template-columns: 1.2fr .8fr 1fr; align-items: center; gap: 1rem; }
+    .offset h3 { font-size: clamp(1.8rem, 3vw, 2.5rem); margin-bottom: .8rem; }
+    .offset p { color: var(--text-muted); font-weight: 300; }
+    .cent { text-align: center; }
+    .cent strong { display: block; font-size: clamp(3rem, 6vw, 5rem); color: var(--gold-primary); line-height: 1; }
+    .cent span { text-transform: uppercase; letter-spacing: .17em; font-size: .65rem; color: var(--text-muted); }
+
+    footer { background: var(--forest-dark); border-top: 1px solid rgba(200,135,42,.2); padding: 4rem 0 1.1rem; }
+    .foot-grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1.2fr; gap: 1.5rem; }
+    footer h4 { color: var(--white); font-size: 1.4rem; margin-bottom: .6rem; }
+    footer p, footer a { color: rgba(245,240,232,.72); font-size: .92rem; text-decoration: none; }
+    footer ul { list-style: none; display: grid; gap: .35rem; }
+    footer a:hover { color: var(--gold-light); }
+    .foot-bottom { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(200,135,42,.15); display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; font-size: .8rem; color: rgba(245,240,232,.65); }
+    .pill { border: 1px solid rgba(200,135,42,.55); padding: .2rem .45rem; border-radius: 999px; margin-left: .4rem; }
+
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+    .reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 1024px) {
+      body { cursor: auto; }
+      .cursor-dot, .cursor-ring, .scroll-indicator { display: none; }
+      .nav-wrap { align-items: flex-start; }
+      .nav-links { gap: .75rem; }
+      .nav-links a { font-size: .72rem; }
+      .impact-grid, .pillar-grid, .partners-top, .collection-wrap, .offset-wrap, .foot-grid, .plant-wrap, .mission-grid, .partner-grid {
+        grid-template-columns: 1fr;
+      }
+      .impact-item + .impact-item, .pillar-card + .pillar-card { border-left: none; border-top: 1px solid rgba(200,135,42,.2); }
+      .hero { padding-top: 10rem; }
+      .hero h1 { max-width: 11ch; }
+      .partners-top { gap: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="cursor-dot"></div>
+  <div class="cursor-ring"></div>
+
+  <header class="site-nav" id="siteNav">
+    <div class="container nav-wrap">
+      <a class="logo" href="#">Hawaiian Legacy</a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="#plant">Plant a Tree</a>
+        <a href="#partners">Partnerships</a>
+        <a href="#news">Legacy News</a>
+        <a href="#collection">ʻAha ʻUla Collection</a>
+        <a class="btn btn-gold" href="#donate">Donate</a>
+        <a href="#contact">Contact</a>
+        <a href="#find">Find My Tree</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero reveal">
+      <div class="container">
+        <p class="eyebrow">Hawaiian Legacy Reforestation Initiative</p>
+        <h1>Witness the<br> <em>Rebirth</em> of<br> Hawaiʻi's Forests</h1>
+        <p>We're planting 1.3 million endemic Hawaiian trees — restoring critical habitat, sequestering carbon, and protecting Hawaiʻi's rarest species for generations to come.</p>
+        <div class="cta-row">
+          <a class="btn btn-gold" href="#plant">Plant a Tree</a>
+          <a class="btn btn-ghost" href="#partners">Become a Partner →</a>
+        </div>
+      </div>
+      <div class="scroll-indicator"><div class="line"></div><span>Scroll</span></div>
+    </section>
+
+    <section class="impact-bar reveal">
+      <div class="container impact-grid">
+        <article class="impact-item">
+          <div class="impact-number" data-counter="609582">609,582</div>
+          <div class="impact-label"><span class="live-dot"></span>Endemic Trees Planted</div>
+        </article>
+        <article class="impact-item">
+          <div class="impact-number">1,200+</div>
+          <div class="impact-label">Acres of Native Habitat</div>
+        </article>
+        <article class="impact-item">
+          <div class="impact-number">9</div>
+          <div class="impact-label">Endemic Tree Species</div>
+        </article>
+        <article class="impact-item">
+          <div class="impact-number">2014</div>
+          <div class="impact-label">Est. Hawaiʻi Island</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="mission reveal">
+      <div class="container mission-grid">
+        <div>
+          <p class="label">Who We Are</p>
+          <h2>Man and nature<br>can not only<br>coexist — they<br>can <em>thrive.</em></h2>
+        </div>
+        <div>
+          <p>Hawaiian Legacy Reforestation Initiative is a 501(c)(3) nonprofit founded in 2014 to preserve economically viable, sustainable native Hawaiian forests — protecting endangered species, sequestering carbon, and recharging watersheds.</p>
+          <p>Generations ago, pineapple, sugarcane, and cattle replaced the endemic koa and ʻōhiʻa forests on Mauna Kea. In 2009, we planted a single koa tree and turned the corner on a century of degradation. Our forests span the Big Island of Hawaiʻi and Oʻahu.</p>
+          <div class="inline-stats">
+            <div><strong>400K+</strong><span>Rare endemic trees planted and growing</span></div>
+            <div><strong>Gold</strong><span>Standard certified carbon sequestration</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pillars reveal">
+      <div class="container pillar-grid">
+        <article class="pillar-card">
+          <span class="ghost-no">01</span>
+          <div class="icon-box">🌱</div>
+          <h3>Restore</h3>
+          <p>We plant native Hawaiian trees on land stripped by a century of agriculture and cattle — rebuilding koa, ʻōhiʻa, iliahi, and other endemic species where they once thrived.</p>
+        </article>
+        <article class="pillar-card">
+          <span class="ghost-no">02</span>
+          <div class="icon-box">🐦</div>
+          <h3>Protect</h3>
+          <p>Our forests provide critical habitat for some of Hawaiʻi's rarest birds, protect the island's reef and ocean life, and recharge the watersheds that communities depend on.</p>
+        </article>
+        <article class="pillar-card">
+          <span class="ghost-no">03</span>
+          <div class="icon-box">🌍</div>
+          <h3>Offset</h3>
+          <p>Gold Standard certified carbon sequestration. For a penny a mile, offset your air travel and make a measurable difference for Hawaiʻi's forests.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="quote reveal" id="news">
+      <div class="container">
+        <div class="line"></div>
+        <blockquote>"It's kind of fun to do the impossible."</blockquote>
+        <p class="attrib">Walt Disney — quoted by the Hawaiian Legacy team</p>
+        <p>When this project launched, local forestry experts said it couldn't be done. Fast forward: we have a forest more than 400,000 trees strong, growth rates exceeding every projection. We are witnessing the beginnings of a new industry in Hawaiʻi — built by people who believed in the mission and ignored the critics.</p>
+      </div>
+    </section>
+
+    <section class="plant reveal" id="plant">
+      <div class="plant-wrap">
+        <div class="orbit-side">
+          <div class="orbiter"><div class="leaf">🌿</div></div>
+        </div>
+        <div class="plant-copy">
+          <div class="container">
+            <p class="label">Plant Your Tree</p>
+            <h2>Own a piece of Hawaiʻi's living legacy.</h2>
+            <p>Every tree you plant is tracked and mapped — yours to find, yours to follow, yours to pass on. Join thousands of individuals who have already made their mark on these sacred forests.</p>
+            <div class="cta-row">
+              <a class="btn btn-gold" href="#donate">Plant a Tree</a>
+              <a class="btn btn-ghost" href="#find">Find My Tree →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="partners reveal" id="partners">
+      <div class="container">
+        <div class="partners-top">
+          <h2>Your organization can represent a sustainable future for Hawaiʻi — and beyond.</h2>
+          <div>
+            <p>Reforestation makes a real difference in the way communities participate in protecting the rare natural beauty of our world. Get to know our partners and why a commitment to sustainability is the right decision, right now.</p>
+            <br>
+            <a class="btn btn-gold" href="#">Become a Partner</a>
+          </div>
+        </div>
+        <div class="partner-grid">
+          <div class="partner-box"><span>Four Seasons Hualalai</span></div>
+          <div class="partner-box"><span>Goldman Sachs</span></div>
+          <div class="partner-box"><span>Alaska Airlines</span></div>
+          <div class="partner-box"><span>Hapuna Beach Resort</span></div>
+          <div class="partner-box"><span>Paradise Helicopters</span></div>
+          <div class="partner-box"><span>Mutual of Omaha</span></div>
+          <div class="partner-box"><span>Residence Inn</span></div>
+          <div class="partner-box"><span>Rising Sun</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="collection reveal" id="collection">
+      <div class="container collection-wrap">
+        <div>
+          <p class="label">ʻAha ʻUla Collection</p>
+          <h2>Where conservation meets <em>Hawaiian heritage.</em></h2>
+          <p>In Hawaiʻi, feathered garments denoted status and were worn only by the most powerful aliʻi. Our reforestation re-established critical habitat for endemic species — some endangered — that make this living tradition possible again.</p>
+          <div class="quote-box">
+            “This collection provides an important link between Hawaiian history and our efforts to preserve these rare forests for future generations.”<br>
+            — Jeff Dunster, HLRI President
+          </div>
+          <a class="btn btn-gold" href="#">Explore the Collection</a>
+        </div>
+        <aside class="decor-frame">
+          <div class="frame-inner">
+            <div class="feather">🪶</div>
+            <em>A living tradition, renewed by forest restoration.</em>
+          </div>
+          <span class="gold-tag">ʻAha ʻUla</span>
+        </aside>
+      </div>
+    </section>
+
+    <section class="offset reveal" id="donate">
+      <div class="container offset-wrap">
+        <div>
+          <p class="label">Offset Travel</p>
+          <h3>Thinking of traveling?</h3>
+          <p>For a penny a mile, offset your carbon footprint and help restore Hawaiʻi's native forests.</p>
+        </div>
+        <div class="cent">
+          <strong>¢1</strong>
+          <span>Per Mile Offset</span>
+        </div>
+        <div style="text-align:right;"><a class="btn btn-gold" href="#">Offset My Air Travel</a></div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="contact" class="reveal">
+    <div class="container">
+      <div class="foot-grid">
+        <div>
+          <h4>Hawaiian Legacy</h4>
+          <p>Hawaiian Legacy Reforestation Initiative is restoring endemic Hawaiian forests to protect biodiversity, watersheds, and future generations.</p>
+        </div>
+        <div>
+          <h4>Take Action</h4>
+          <ul>
+            <li><a href="#plant">Plant a Tree</a></li>
+            <li><a href="#find">Find My Tree</a></li>
+            <li><a href="#donate">Donate</a></li>
+            <li><a href="#donate">Offset Air Travel</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="#">The Forest</a></li>
+            <li><a href="#partners">Partnerships</a></li>
+            <li><a href="#collection">ʻAha ʻUla</a></li>
+            <li><a href="#news">Legacy News</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <p>91-1001 Kaimalie St, Ewa Beach, HI</p>
+          <p>(808) 555-0144</p>
+          <p>aloha@hawaiianlegacy.org</p>
+          <p>Mon–Fri · 8:00 AM – 4:00 PM HST</p>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <span>Copyright © 2026 HLRI™ 501(c)(3)</span>
+        <span><span class="pill">Gold Standard Certified</span><span class="pill">Candid Silver Seal 2025</span></span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('siteNav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    const revealItems = document.querySelectorAll('.reveal, .reveal > *');
+    revealItems.forEach((el, idx) => {
+      if (el.closest('.reveal')) {
+        const siblings = [...el.parentElement.children];
+        const delay = siblings.indexOf(el) % 4;
+        el.style.transitionDelay = `${delay * 0.1}s`;
+      }
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('is-visible');
+      });
+    }, { threshold: 0.2 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    const counter = document.querySelector('[data-counter]');
+    let counterStarted = false;
+    if (counter) {
+      const target = Number(counter.dataset.counter);
+      const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !counterStarted) {
+            counterStarted = true;
+            let current = Math.max(target - 150, 0);
+            const duration = 1200;
+            const frames = 60;
+            const step = (target - current) / frames;
+            let i = 0;
+            const timer = setInterval(() => {
+              i++;
+              current += step;
+              if (i >= frames) {
+                clearInterval(timer);
+                counter.textContent = target.toLocaleString();
+              } else {
+                counter.textContent = Math.floor(current).toLocaleString();
+              }
+            }, duration / frames);
+
+            setInterval(() => {
+              const bump = Math.floor(Math.random() * 3) + 1;
+              const val = Number(counter.textContent.replace(/,/g, '')) + bump;
+              counter.textContent = val.toLocaleString();
+            }, 4000);
+          }
+        });
+      }, { threshold: 0.5 });
+      counterObserver.observe(counter);
+    }
+
+    const dot = document.querySelector('.cursor-dot');
+    const ring = document.querySelector('.cursor-ring');
+    let ringX = 0, ringY = 0;
+    window.addEventListener('mousemove', (e) => {
+      if (window.innerWidth <= 1024) return;
+      dot.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+      ringX += (e.clientX - ringX) * 0.18;
+      ringY += (e.clientY - ringY) * 0.18;
+      ring.style.transform = `translate(${ringX}px, ${ringY}px)`;
+    });
+  </script>
+</body>
+</html>
