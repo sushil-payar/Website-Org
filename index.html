@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FormForge Builder</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <h1>FormForge</h1>
+      <div class="actions">
+        <button id="newFormBtn">New</button>
+        <button id="saveBtn">Save JSON</button>
+        <button id="loadBtn">Load JSON</button>
+        <button id="exportBtn" class="primary">Export HTML</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="panel toolbox">
+        <h2>Field Library</h2>
+        <p>Click to add a field.</p>
+        <div id="fieldPalette" class="palette"></div>
+      </aside>
+
+      <section class="panel canvas">
+        <div class="canvas-header">
+          <input id="formTitle" value="Untitled Form" aria-label="Form title" />
+          <small>Click a field to edit settings</small>
+        </div>
+        <div id="formCanvas" class="form-canvas"></div>
+      </section>
+
+      <aside class="panel properties">
+        <h2>Field Settings</h2>
+        <div id="fieldSettings" class="empty-state">Select a field to configure it.</div>
+      </aside>
+    </main>
+
+    <template id="canvasFieldTemplate">
+      <article class="canvas-field" tabindex="0">
+        <div class="field-meta">
+          <strong class="field-label"></strong>
+          <span class="field-type"></span>
+        </div>
+        <div class="field-actions">
+          <button data-action="move-up" title="Move up">↑</button>
+          <button data-action="move-down" title="Move down">↓</button>
+          <button data-action="duplicate" title="Duplicate">⧉</button>
+          <button data-action="delete" title="Delete">✕</button>
+        </div>
+      </article>
+    </template>
+
+    <script src="app.js" type="module"></script>
+  </body>
+</html>
